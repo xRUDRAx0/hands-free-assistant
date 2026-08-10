@@ -1,0 +1,366 @@
+/* ══════════════════════════════════════════════════════════
+   App.css — Hands-Free Assistant
+   Premium dark-mode, mic-centric, animation-driven design.
+   Google Font: Outfit (loaded via index.html)
+   ══════════════════════════════════════════════════════════ */
+
+/* ── Design Tokens ──────────────────────────────────────── */
+:root {
+  /* State colour palette (HSL for easy manipulation) */
+  --clr-idle:      220 14% 14%;
+  --clr-listening: 210 100% 56%;   /* vivid blue */
+  --clr-thinking:  38 100% 56%;    /* amber */
+  --clr-speaking:  142 71% 45%;    /* emerald */
+  --clr-done:      270 70% 60%;    /* violet */
+
+  /* Base palette */
+  --bg:            hsl(220, 14%, 7%);
+  --surface:       hsl(220, 14%, 11%);
+  --border:        hsl(220, 14%, 20%);
+  --text-primary:  hsl(220, 14%, 95%);
+  --text-muted:    hsl(220, 14%, 55%);
+
+  /* Current state accent — updated by [data-state] attribute */
+  --accent-h:      220;
+  --accent-s:      14%;
+  --accent-l:      50%;
+  --accent:        hsl(var(--accent-h) var(--accent-s) var(--accent-l));
+  --accent-dim:    hsl(var(--accent-h) var(--accent-s) var(--accent-l) / 0.15);
+  --accent-glow:   hsl(var(--accent-h) var(--accent-s) var(--accent-l) / 0.35);
+
+  /* Sizing */
+  --mic-size:      min(200px, 38vw);
+  --ring-gap:      28px;
+}
+
+/* State-driven colour cascade */
+[data-state="listening"] { --accent-h: 210; --accent-s: 100%; --accent-l: 56%; }
+[data-state="thinking"]  { --accent-h: 38;  --accent-s: 100%; --accent-l: 56%; }
+[data-state="speaking"]  { --accent-h: 142; --accent-s: 71%;  --accent-l: 45%; }
+[data-state="done"]      { --accent-h: 270; --accent-s: 70%;  --accent-l: 60%; }
+
+/* ── Reset & Base ───────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: "Outfit", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── App Shell ──────────────────────────────────────────── */
+.app {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: background 0.8s ease;
+}
+
+/* Ambient glow that shifts with state */
+.bg-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 60% 50% at 50% 60%,
+    var(--accent-glow),
+    transparent 70%
+  );
+  transition: background 0.6s ease;
+  pointer-events: none;
+}
+
+/* ── Stage (centred column) ─────────────────────────────── */
+.stage {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  padding: 24px;
+  text-align: center;
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+.header {
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.header--hidden {
+  opacity: 0;
+  transform: translateY(-12px);
+  pointer-events: none;
+  position: absolute; /* don't take layout space when hidden */
+}
+
+.title {
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  background: linear-gradient(
+    135deg,
+    hsl(var(--accent-h) var(--accent-s) 80%) 0%,
+    hsl(var(--accent-h) var(--accent-s) 55%) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: background 0.6s ease;
+}
+
+.subtitle {
+  margin-top: 6px;
+  font-size: 1rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+/* ── Mic Button + Rings ─────────────────────────────────── */
+.mic-wrapper {
+  position: relative;
+  width: var(--mic-size);
+  height: var(--mic-size);
+  display: grid;
+  place-items: center;
+}
+
+/* Animated rings — each ring has different scale & opacity */
+.ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  opacity: 0;
+  pointer-events: none;
+  transition: border-color 0.4s ease;
+}
+
+.ring--1 { width: 100%; height: 100%; }
+.ring--2 { width: calc(100% + var(--ring-gap) * 2); height: calc(100% + var(--ring-gap) * 2); }
+.ring--3 { width: calc(100% + var(--ring-gap) * 4); height: calc(100% + var(--ring-gap) * 4); }
+
+/* ── Ring animations per state ────── */
+
+/* LISTENING — slow rhythmic pulse */
+[data-state="listening"] .ring--1 { animation: ring-pulse 2s ease-in-out infinite; }
+[data-state="listening"] .ring--2 { animation: ring-pulse 2s ease-in-out 0.5s infinite; }
+[data-state="listening"] .ring--3 { animation: ring-pulse 2s ease-in-out 1s infinite; }
+
+/* THINKING — fast spin flicker */
+[data-state="thinking"] .ring--1 { animation: ring-spin 1.2s linear infinite, ring-flicker 1.2s ease-in-out infinite; }
+[data-state="thinking"] .ring--2 { animation: ring-spin 1.8s linear infinite reverse, ring-flicker 1.8s ease-in-out 0.3s infinite; }
+[data-state="thinking"] .ring--3 { animation: ring-spin 2.4s linear infinite, ring-flicker 2.4s ease-in-out 0.6s infinite; }
+
+/* SPEAKING — outward radiating wave */
+[data-state="speaking"] .ring--1 { animation: ring-radiate 1.4s ease-out infinite; }
+[data-state="speaking"] .ring--2 { animation: ring-radiate 1.4s ease-out 0.35s infinite; }
+[data-state="speaking"] .ring--3 { animation: ring-radiate 1.4s ease-out 0.7s infinite; }
+
+/* DONE — gentle fade */
+[data-state="done"] .ring--1 { animation: ring-pulse 3s ease-in-out infinite; opacity: 0.3; }
+
+@keyframes ring-pulse {
+  0%, 100% { opacity: 0; transform: scale(0.95); }
+  50%       { opacity: 0.7; transform: scale(1.02); }
+}
+
+@keyframes ring-radiate {
+  0%   { opacity: 0.8; transform: scale(0.9); }
+  100% { opacity: 0; transform: scale(1.35); }
+}
+
+@keyframes ring-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes ring-flicker {
+  0%, 100% { opacity: 0.15; }
+  50%       { opacity: 0.6; }
+}
+
+/* The button itself */
+.mic-btn {
+  position: relative;
+  z-index: 2;
+  width: 72%;
+  height: 72%;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+
+  /* Glassmorphism surface */
+  background: hsl(220 14% 14% / 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 0 0 1px var(--border),
+    0 0 40px var(--accent-dim),
+    inset 0 1px 0 hsl(0 0% 100% / 0.06);
+
+  color: var(--accent);
+  display: grid;
+  place-items: center;
+  transition:
+    color 0.4s ease,
+    box-shadow 0.4s ease,
+    transform 0.15s ease;
+}
+
+.mic-btn:hover:not(:disabled) {
+  transform: scale(1.04);
+  box-shadow:
+    0 0 0 1px var(--accent),
+    0 0 60px var(--accent-glow),
+    inset 0 1px 0 hsl(0 0% 100% / 0.08);
+}
+
+.mic-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.mic-btn:disabled {
+  cursor: default;
+}
+
+.mic-icon {
+  width: 40%;
+  height: 40%;
+  display: grid;
+  place-items: center;
+  transition: transform 0.3s ease;
+}
+
+.mic-icon svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 8px var(--accent-glow));
+  transition: filter 0.4s ease;
+}
+
+/* Mic icon breathing animation when listening */
+[data-state="listening"] .mic-icon {
+  animation: mic-breathe 2s ease-in-out infinite;
+}
+
+@keyframes mic-breathe {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.12); }
+}
+
+/* ── Status Block ───────────────────────────────────────── */
+.status-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-height: 56px;
+}
+
+.state-label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  transition: color 0.4s ease;
+  text-transform: uppercase;
+}
+
+.step-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+}
+
+/* ── Hint text ──────────────────────────────────────────── */
+.hint {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  max-width: 320px;
+  line-height: 1.6;
+}
+
+.hint em {
+  font-style: normal;
+  color: hsl(var(--accent-h) var(--accent-s) 72%);
+  font-weight: 500;
+}
+
+/* ── Stop button ────────────────────────────────────────── */
+.stop-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: hsl(220 14% 12% / 0.8);
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  letter-spacing: 0.02em;
+}
+
+.stop-btn svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.stop-btn:hover {
+  color: hsl(0 70% 65%);
+  border-color: hsl(0 70% 40% / 0.6);
+  background: hsl(0 50% 10% / 0.6);
+}
+
+/* ── Procedure badge ────────────────────────────────────── */
+.procedure-badge {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: hsl(220 14% 10% / 0.9);
+  backdrop-filter: blur(8px);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  font-weight: 500;
+  animation: badge-drop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  white-space: nowrap;
+}
+
+@keyframes badge-drop {
+  from { opacity: 0; transform: translateX(-50%) translateY(-12px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* ── Responsive tweaks ──────────────────────────────────── */
+@media (max-width: 480px) {
+  :root { --mic-size: 220px; --ring-gap: 20px; }
+  .title { font-size: 1.6rem; }
+  .stage { gap: 24px; }
+}
+
+@media (min-width: 1024px) {
+  :root { --mic-size: 260px; }
+}
+
+/* ── Reduced motion ─────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .ring, .mic-icon, .bg-glow { animation: none !important; }
+}

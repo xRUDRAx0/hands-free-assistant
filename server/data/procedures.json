@@ -1,0 +1,38 @@
+{
+  "id": "cold-brew-coffee",
+  "name": "Cold Brew Coffee",
+  "steps": [
+    {
+      "step_number": 1,
+      "text": "Step 1. Measure out 1 cup — that's about 85 grams — of coarsely ground coffee beans. The grind should feel like raw sugar crystals. Too fine and your brew will turn bitter and muddy."
+    },
+    {
+      "step_number": 2,
+      "text": "Step 2. Pour the ground coffee into a large jar or pitcher. A 32-ounce Mason jar works perfectly for this recipe."
+    },
+    {
+      "step_number": 3,
+      "text": "Step 3. Add 4 cups — that's 950 milliliters — of cold, filtered water. Pour it slowly over the grounds to make sure every bit of coffee is fully saturated."
+    },
+    {
+      "step_number": 4,
+      "text": "Step 4. Stir gently with a long spoon until all the grounds are wet. Check that no dry clumps remain floating on top."
+    },
+    {
+      "step_number": 5,
+      "text": "Step 5. Cover the jar with a lid or plastic wrap. Place it in the refrigerator now."
+    },
+    {
+      "step_number": 6,
+      "text": "Step 6. Let it steep for 12 to 24 hours. Eighteen hours is the sweet spot for a balanced, smooth, and rich cold brew."
+    },
+    {
+      "step_number": 7,
+      "text": "Step 7. After steeping, strain the concentrate through a fine-mesh sieve lined with cheesecloth or a paper coffee filter into a clean container. Discard the spent grounds."
+    },
+    {
+      "step_number": 8,
+      "text": "Step 8, the final step. To serve, dilute the concentrate with an equal part of water or milk. Pour over a full glass of ice and enjoy. The concentrate stays fresh in the fridge for up to two weeks."
+    }
+  ]
+}
