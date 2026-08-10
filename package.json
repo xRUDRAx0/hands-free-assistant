@@ -9,6 +9,7 @@
     "dev:client": "vite",
     "setup": "node scripts/setup-qdrant.js",
     "build": "vite build",
+    "start": "node server/index.js",
     "preview": "vite preview"
   },
   "dependencies": {

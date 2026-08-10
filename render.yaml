@@ -1,0 +1,23 @@
+# render.yaml — Render deployment config
+# Render will detect this file and auto-configure the service.
+# Docs: https://render.com/docs/infrastructure-as-code
+
+services:
+  - type: web
+    name: hands-free-assistant
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      # Add these in the Render dashboard → Environment tab:
+      # RIME_API_KEY
+      # QDRANT_URL
+      # QDRANT_API_KEY
+      # QDRANT_COLLECTION
+      # GROQ_API_KEY
+      # HF_API_TOKEN

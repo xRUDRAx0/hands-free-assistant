@@ -9,6 +9,12 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import { fileURLToPath } from "url";
+import { dirname, join }  from "path";
+import { existsSync }     from "fs";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const isProd    = process.env.NODE_ENV === "production";
 
 // Route handlers
 import classifyRouter from "./routes/classify.js";
@@ -21,8 +27,11 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // ── Middleware ───────────────────────────────────────────────────────────────
-// Allow Vite dev server (localhost:5173) to call us
-app.use(cors({ origin: ["http://localhost:5173", "http://localhost:4173"] }));
+// In dev, Vite runs separately on :5173 — allow it to call our API.
+// In prod, everything is same-origin so CORS is only needed for external tools.
+if (!isProd) {
+  app.use(cors({ origin: ["http://localhost:5173", "http://localhost:4173"] }));
+}
 
 // Parse JSON request bodies (up to 1MB — audio responses can be chunky)
 app.use(express.json({ limit: "1mb" }));
@@ -39,7 +48,22 @@ app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-// ── Start ────────────────────────────────────────────────────────────────────
+// ── Production: serve Vite build ─────────────────────────────────────────────
+if (isProd) {
+  const distPath = join(__dirname, "../dist");
+  if (existsSync(distPath)) {
+    app.use(express.static(distPath));
+    // Fallback to index.html for client-side routing
+    app.get("*", (_req, res) =>
+      res.sendFile(join(distPath, "index.html"))
+    );
+    console.log(`[server] Serving static build from ${distPath}`);
+  } else {
+    console.warn("[server] WARNING: dist/ not found — run 'npm run build' first");
+  }
+}
+
+// ── Start ─────────────────────────────────────────────────────────────────────
 // NOTE: Express 5 changed app.listen() to return a Promise — must await it
 // so the event loop stays open and the server doesn't immediately exit.
 const server = await app.listen(PORT);
