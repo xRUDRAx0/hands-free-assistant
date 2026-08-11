@@ -2,6 +2,14 @@
 
 > A voice-controlled, eyes-free step-by-step guide for hands-busy tasks — cooking, lab work, assembly. No screen interaction required once the session starts.
 
+[![Live Demo](https://img.shields.io/badge/🚀%20Live%20Demo-hands--free--assistant-brightgreen?style=for-the-badge)](https://hands-free-assistant-1.onrender.com)
+[![GitHub](https://img.shields.io/badge/GitHub-xRUDRAx0%2Fhands--free--assistant-181717?style=for-the-badge&logo=github)](https://github.com/xRUDRAx0/hands-free-assistant)
+[![Deployed on Render](https://img.shields.io/badge/Deployed%20on-Render-46E3B7?style=for-the-badge&logo=render)](https://render.com)
+
+### 🌐 [https://hands-free-assistant-1.onrender.com](https://hands-free-assistant-1.onrender.com)
+
+> **Use Chrome or Edge** — Web Speech API is required. First load may take ~30s (free tier cold start).
+
 ---
 
 ## Architecture
