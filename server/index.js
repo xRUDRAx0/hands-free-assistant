@@ -53,8 +53,8 @@ if (isProd) {
   const distPath = join(__dirname, "../dist");
   if (existsSync(distPath)) {
     app.use(express.static(distPath));
-    // Fallback to index.html for client-side routing
-    app.get("*", (_req, res) =>
+    // Express 5: wildcard must be "/{*path}" not "*"
+    app.get("/{*path}", (_req, res) =>
       res.sendFile(join(distPath, "index.html"))
     );
     console.log(`[server] Serving static build from ${distPath}`);
