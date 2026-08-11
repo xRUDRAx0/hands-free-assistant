@@ -7,13 +7,11 @@ services:
     name: hands-free-assistant
     runtime: node
     plan: free
-    buildCommand: npm install && npm run build
-    startCommand: npm start
+    buildCommand: npm install --include=dev && npm run build
+    startCommand: NODE_ENV=production npm start
     envVars:
-      - key: NODE_ENV
-        value: production
       - key: PORT
-        value: 3001
+        value: 10000
       # Add these in the Render dashboard → Environment tab:
       # RIME_API_KEY
       # QDRANT_URL
