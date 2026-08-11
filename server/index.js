@@ -24,7 +24,7 @@ import speakRouter from "./routes/speak.js";
 import answerRouter from "./routes/answer.js";
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 10000;
 
 // ── Middleware ───────────────────────────────────────────────────────────────
 // In dev, Vite runs separately on :5173 — allow it to call our API.
